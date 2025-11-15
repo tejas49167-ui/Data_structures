@@ -2,148 +2,145 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct node {
-    char usn[20], name[20], course[20];
+//Structure representing a student node
+typedef struct Node {
+    char usn[20]    ;
+    char name[20]   ;
+    char course[20] ;
     int sem;
-    long int phno;
-    struct node *next;
-};
-typedef struct node *NODE;
+    long int phone;
+    struct Node *next;
+}* NODE;
 
-NODE first = NULL;
+NODE head = NULL;  //Pointer to the first node (head of list)
 
-// Function to create a new node
-NODE getnode() {
-    NODE x;
-    x = (NODE)malloc(sizeof(struct node));
-    if (x == NULL) {
-        printf("Memory not allocated\n");
-        exit(0);
+// Function to allocate memory for a new node
+NODE createNode() {
+    NODE newNode = (NODE)malloc(sizeof(struct Node));
+    if (newNode == NULL) {
+        printf("Error: Memory allocation failed!\n");
+        exit(1);
     }
-    return x;
+    return newNode;
 }
 
-// Function to insert at front
-NODE insert_front(NODE first) {
-    NODE temp;
-    temp = getnode();
-    printf("Enter USN, Name, Course, Sem, Phone number:\n");
-    scanf("%s %s %s %d %ld", temp->usn, temp->name, temp->course, &temp->sem, &temp->phno);
-    temp->next = first;
-    first = temp;
-    return first;
+// Function to insert a new node at the front
+NODE insertAtFront(NODE head) {
+    NODE newNode = createNode();
+    printf("Enter USN, Name, Course, Semester, Phone Number:\n");
+    scanf("%s %s %s %d %ld", newNode->usn, newNode->name, newNode->course, &newNode->sem, &newNode->phone);
+    newNode->next = head;
+    head = newNode;
+    return head;
 }
 
-// Function to insert at end
-NODE insert_end(NODE first) {
-    NODE temp, cur;
-    temp = getnode();
-    printf("Enter USN, Name, Course, Sem, Phone number:\n");
-    scanf("%s %s %s %d %ld", temp->usn, temp->name, temp->course, &temp->sem, &temp->phno);
-    temp->next = NULL;
-    if (first == NULL)
-        return temp;
-    cur = first;
-    while (cur->next != NULL)
-        cur = cur->next;
-    cur->next = temp;
-    return first;
+// Function to insert a new node at the end
+NODE insertAtEnd(NODE head) {
+    NODE newNode = createNode();
+    printf("Enter USN, Name, Course, Semester, Phone Number:\n");
+    scanf("%s %s %s %d %ld", newNode->usn, newNode->name, newNode->course, &newNode->sem, &newNode->phone);
+    newNode->next = NULL;
+
+    if (head == NULL)
+        return newNode;
+
+    NODE temp = head;
+    while (temp->next != NULL)
+        temp = temp->next;
+    temp->next = newNode;
+    return head;
 }
 
-// Function to delete at front
-NODE delete_front(NODE first) {
-    NODE temp;
-    if (first == NULL) {
-        printf("List is empty\n");
-        return first;
+// Function to delete a node from the front
+NODE deleteFromFront(NODE head) {
+    if (head == NULL) {
+        printf("List is empty.\n");
+        return head;
     }
-    temp = first;
-    printf("Deleted record: %s %s %s %d %ld\n", temp->usn, temp->name, temp->course, temp->sem, temp->phno);
-    first = first->next;
+    NODE temp = head;
+    printf("Deleted: %s %s %s %d %ld\n", temp->usn, temp->name, temp->course, temp->sem, temp->phone);
+    head = head->next;
     free(temp);
-    return first;
+    return head;
 }
 
-// Function to delete at end
-NODE delete_end(NODE first) {
-    NODE cur, prev;
-    if (first == NULL) {
-        printf("List is empty\n");
-        return first;
+// Function to delete a node from the end
+NODE deleteFromEnd(NODE head) {
+    if (head == NULL) {
+        printf("List is empty.\n");
+        return head;
     }
-    if (first->next == NULL) {
-        printf("Deleted record: %s %s %s %d %ld\n", first->usn, first->name, first->course, first->sem, first->phno);
-        free(first);
+    if (head->next == NULL) {
+        printf("Deleted: %s %s %s %d %ld\n", head->usn, head->name, head->course, head->sem, head->phone);
+        free(head);
         return NULL;
     }
-    cur = first;
-    while (cur->next != NULL) {
-        prev = cur;
-        cur = cur->next;
+    NODE temp = head, prev = NULL;
+    while (temp->next != NULL) {
+        prev = temp;
+        temp = temp->next;
     }
-    printf("Deleted record: %s %s %s %d %ld\n", cur->usn, cur->name, cur->course, cur->sem, cur->phno);
-    free(cur);
+    printf("Deleted: %s %s %s %d %ld\n", temp->usn, temp->name, temp->course, temp->sem, temp->phone);
+    free(temp);
     prev->next = NULL;
-    return first;
+    return head;
 }
 
-// Function to display list
-void display(NODE first) {
-    NODE temp;
-    int count = 0;
-    if (first == NULL) {
-        printf("List is empty\n");
+// Function to display all nodes
+void displayList(NODE head) {
+    if (head == NULL) {
+        printf("List is empty.\n");
         return;
     }
-    printf("\nStudent Details are:\n");
-    printf("USN\tName\tCourse\tSem\tPhone\n");
-    printf("---------------------------------------------\n");
-    temp = first;
+    printf("\n%s %s %s %s %s\n", "USN", "Name", "Course", "Sem", "Phone");
+    printf("-------------------------------------------------------------\n");
+    NODE temp = head;
+    int count = 0;
     while (temp != NULL) {
-        printf("%s\t%s\t%s\t%d\t%ld\n", temp->usn, temp->name, temp->course, temp->sem, temp->phno);
+        printf("%s %s %s %d %ld\n", temp->usn, temp->name, temp->course, temp->sem, temp->phone);
         temp = temp->next;
         count++;
     }
-    printf("---------------------------------------------\n");
-    printf("Total number of students = %d\n", count);
+    printf("-------------------------------------------------------------\n");
+    printf("Total Students: %d\n", count);
 }
 
-// Function to create list with N students (front insertion)
-NODE create(NODE first) {
-    int n, i;
-    printf("Enter number of students:\n");
+// Function to create a list using front insertion
+NODE createList(NODE head) {
+    int n;
+    printf("Enter number of students to add: ");
     scanf("%d", &n);
-    for (i = 0; i < n; i++) {
-        printf("Enter details of student %d\n", i + 1);
-        first = insert_front(first);
+    for (int i = 0; i < n; i++) {
+        printf("\nEnter details for Student %d\n", i + 1);
+        head = insertAtFront(head);
     }
-    return first;
+    return head;
 }
 
-// Main function
+// Main function (menu-driven)
 int main() {
     int choice;
     while (1) {
-        printf("\n--- MENU ---\n");
-        printf("1. Create SLL using front insertion\n");
-        printf("2. Display and count nodes\n");
-        printf("3. Insert at end\n");
-        printf("4. Delete at end\n");
-        printf("5. Insert at front (Stack Push)\n");
-        printf("6. Delete at front (Stack Pop)\n");
+        printf("\n========== STUDENT MANAGEMENT MENU ==========\n");
+        printf("1. Create List (Front Insertion)\n");
+        printf("2. Display All Students\n");
+        printf("3. Insert Student at End\n");
+        printf("4. Delete Student from End\n");
+        printf("5. Insert Student at Front (Push)\n");
+        printf("6. Delete Student from Front (Pop)\n");
         printf("7. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
         switch (choice) {
-            case 1: first = create(first); break;
-            case 2: display(first); break;
-            case 3: first = insert_end(first); break;
-            case 4: first = delete_end(first); break;
-            case 5: first = insert_front(first); break;
-            case 6: first = delete_front(first); break;
-            case 7: exit(0);
-            default: printf("Invalid choice\n");
+            case 1: head = createList(head); break;
+            case 2: displayList(head); break;
+            case 3: head = insertAtEnd(head); break;
+            case 4: head = deleteFromEnd(head); break;
+            case 5: head = insertAtFront(head); break;
+            case 6: head = deleteFromFront(head); break;
+            case 7: printf("Exiting program...\n"); exit(0);
+            default: printf("Invalid choice. Try again.\n");
         }
     }
     return 0;
